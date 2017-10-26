@@ -16,7 +16,7 @@ class TwitterMiner:
 
         try:
             (oauth_token, oauth_token_secret) = read_token_file(TOKEN_FILE)
-        except IOError, e:
+        except IOError as e:
             (oauth_token, oauth_token_secret) = oauth_dance(APP_NAME, CONSUMER_KEY,
                                                             CONSUMER_SECRET)
 
