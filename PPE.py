@@ -71,7 +71,7 @@ def get_article_token():
         lowers = text.lower()
         no_punctuation = lowers.translate(str.maketrans("", "", string.punctuation))
         tokens = toker.tokenize(no_punctuation)
-        article_token_dict[article['_id']] = tokens
+        article_token_dict[article['_id']] = " ".join(tokens)
     return article_token_dict
 
 
