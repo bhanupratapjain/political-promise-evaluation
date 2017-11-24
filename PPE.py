@@ -7,6 +7,7 @@ import numpy.linalg as LA
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
@@ -57,7 +58,7 @@ def stem_tokens(tokens):
         # stemmed.append(nltk.PorterStemmer().stem(item))
         stemmed.append(nltk.WordNetLemmatizer().lemmatize(item))
     count = nltk.Counter(stemmed)
-    print(count.most_common(10))
+    # print(count.most_common(10))
     return stemmed
 
 
@@ -103,12 +104,12 @@ def get_promise_token():
 
 cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)), 3)
 
-def cosine_similarity(vector1, vector2):
-    dot_product = sum(p*q for p,q in zip(vector1, vector2))
-    magnitude = np.math.sqrt(sum([val ** 2 for val in vector1])) * np.math.sqrt(sum([val ** 2 for val in vector2]))
-    if not magnitude:
-        return 0
-    return dot_product/magnitude
+# def cosine_similarity(vector1, vector2):
+#     dot_product = sum(p*q for p,q in zip(vector1, vector2))
+#     magnitude = np.math.sqrt(sum([val ** 2 for val in vector1])) * np.math.sqrt(sum([val ** 2 for val in vector2]))
+#     if not magnitude:
+#         return 0
+#     return dot_product/magnitude
 
 if __name__ == "__main__":
     # pprint.pprint(get_tweets())
@@ -120,20 +121,32 @@ if __name__ == "__main__":
     article_tokens = get_article_token()
     promise_tokens = get_promise_token()
     all_tokens = []
+    all_tokens.extend(list(promise_tokens.values())[0:2])
     all_tokens.extend(list(article_tokens.values()))
-    all_tokens.extend(list(promise_tokens.values()))
+    print(list(promise_tokens.values())[0:2])
     # train = tfidf.fit_transform(list(promise_tokens.values()))
     # test = tfidf.transform(list(promise_tokens.values()))
     # print(train.toarray()[0].tolist())
-    all_tfidf = tfidf.fit_transform(all_tokens)
+    tfidf_matrix = tfidf.fit_transform(all_tokens)
+
     # feature_names = tfidf.get_feature_names()
     # for col in test.nonzero()[1]:
     #     print (feature_names[col], ' - ', test[0, col])
 
     skl_tfidf_comparisons = []
-    for count_0, doc_0 in enumerate(all_tfidf.toarray()):
-        for count_1, doc_1 in enumerate(all_tfidf.toarray()):
-            skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
+    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
+    #     for count_1, doc_1 in enumerate(tfidf_matrix.toarray()):
+    #         if count_0==count_1:
+    #             continue
+    #         skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
 
-    for x in sorted(skl_tfidf_comparisons, reverse=True):
-        print(x)
+    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
+    #     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
+
+    print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
+    print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
+    # print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
+
+    feature_names = tfidf.get_feature_names()
+
+    print(feature_names)
