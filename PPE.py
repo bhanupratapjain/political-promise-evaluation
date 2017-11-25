@@ -7,10 +7,12 @@ import numpy.linalg as LA
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
+
+from textblob import TextBlob
 
 
 def get_tweets():
@@ -88,7 +90,7 @@ def tokenize(text):
 def get_promise_token():
     promise_token_dict = {}
     toker = nltk.RegexpTokenizer(r'\w+')
-    with open("out/promises.json") as data_file:
+    with open("out/promises2.json") as data_file:
         data = json.load(data_file)
     for promise in data:
         if promise['promise_description']:
@@ -111,6 +113,27 @@ cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)),
 #         return 0
 #     return dot_product/magnitude
 
+
+def sentiment_analysis(c):
+    blob = TextBlob(c)
+    for sentence in blob.sentences:
+        return sentence.sentiment.polarity
+
+
+def match_articles(promise):
+    cosine_sim = cosine_similarity(tfidf_matrix[promise: promise+1], tfidf_matrix)
+    single_array = np.array(cosine_sim[0])
+    article_array = single_array.argsort()[-6:][::-1]
+    only_articles = [s for s in article_array if s > 1]
+    promise_statement = all_tokens[promise]
+    print("The promise made by the candidate was: \n", promise_statement)
+    count = 1
+    for x in only_articles:
+        print(count, all_tokens[x] + "\n")
+        print(sentiment_analysis(all_tokens[x]))
+        count += 1
+
+
 if __name__ == "__main__":
     # pprint.pprint(get_tweets())
     # get_articles()
@@ -121,19 +144,23 @@ if __name__ == "__main__":
     article_tokens = get_article_token()
     promise_tokens = get_promise_token()
     all_tokens = []
-    all_tokens.extend(list(promise_tokens.values())[0:2])
+    all_tokens.extend(list(promise_tokens.values()))
     all_tokens.extend(list(article_tokens.values()))
-    print(list(promise_tokens.values())[0:2])
+    # print(all_tokens, '\n')
+    # print(list(promise_tokens.values()))
     # train = tfidf.fit_transform(list(promise_tokens.values()))
     # test = tfidf.transform(list(promise_tokens.values()))
     # print(train.toarray()[0].tolist())
     tfidf_matrix = tfidf.fit_transform(all_tokens)
+    match_articles(0)
+    match_articles(1)
+    # print(tfidf_matrix)
 
     # feature_names = tfidf.get_feature_names()
     # for col in test.nonzero()[1]:
     #     print (feature_names[col], ' - ', test[0, col])
 
-    skl_tfidf_comparisons = []
+    # skl_tfidf_comparisons = []
     # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
     #     for count_1, doc_1 in enumerate(tfidf_matrix.toarray()):
     #         if count_0==count_1:
@@ -142,11 +169,12 @@ if __name__ == "__main__":
 
     # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
     #     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-
-    print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
-    print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
+    # print(linear_kernel(tfidf_matrix[0: 1], tfidf_matrix).flatten())
+    # print(linear_kernel(tfidf_matrix[1: 2], tfidf_matrix).flatten())
+    # print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
+    #
     # print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
-
-    feature_names = tfidf.get_feature_names()
-
-    print(feature_names)
+    #
+    # feature_names = tfidf.get_feature_names()
+    #
+    # print(feature_names)
