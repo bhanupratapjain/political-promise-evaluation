@@ -2,6 +2,8 @@ import json
 import string
 
 import nltk
+import requests
+import operator
 import numpy as np
 import numpy.linalg as LA
 
@@ -13,6 +15,7 @@ from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
 
 from textblob import TextBlob
+from bs4 import BeautifulSoup
 
 
 def get_tweets():
@@ -114,6 +117,20 @@ cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)),
 #     return dot_product/magnitude
 
 
+def google_search(search_query):
+    search_sentiment_result = []
+    search_query = search_query.replace(" ", "+")
+    query = "https://www.google.com/search?q=" + search_query
+    r = requests.get(query)
+    html_doc = r.text
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    for s in soup.find_all(attrs={'class': 'st'}):
+        search_sentiment_result.append(sentiment_analysis(s.text))
+
+    my_list = {i:search_sentiment_result.count(i) for i in search_sentiment_result}
+    print(max(my_list.items(), key=operator.itemgetter(1))[0])
+
+
 def sentiment_analysis(c):
     blob = TextBlob(c)
     for sentence in blob.sentences:
@@ -126,7 +143,6 @@ def sentiment_analysis(c):
             return "Slightly Positive Response"
         else:
             return "Positive Response"
-
 
 
 def match_articles(promise):
@@ -162,7 +178,12 @@ if __name__ == "__main__":
     # print(train.toarray()[0].tolist())
     tfidf_matrix = tfidf.fit_transform(all_tokens)
     match_articles(0)
+    print("Promise sentiment according to Google Search is:")
+    google_search(all_tokens[0])
+
     match_articles(1)
+    print("Promise sentiment according to Google Search is:")
+    google_search(all_tokens[0])
     # print(tfidf_matrix)
 
     # feature_names = tfidf.get_feature_names()
