@@ -117,7 +117,16 @@ cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)),
 def sentiment_analysis(c):
     blob = TextBlob(c)
     for sentence in blob.sentences:
-        return sentence.sentiment.polarity
+        polarity = sentence.sentiment.polarity
+        if -1.0 <= polarity <= -0.5:
+            return "Negative response"
+        elif -0.5 < polarity <= 0:
+            return "Slightly Negative response"
+        elif 0 <= polarity < 0.5:
+            return "Slightly Positive Response"
+        else:
+            return "Positive Response"
+
 
 
 def match_articles(promise):
