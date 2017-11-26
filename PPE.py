@@ -8,8 +8,8 @@ import numpy as np
 import numpy.linalg as LA
 
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
@@ -119,15 +119,17 @@ cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)),
 
 def google_search(search_query):
     search_sentiment_result = []
+    search_result_limit = 100
     search_query = search_query.replace(" ", "+")
-    query = "https://www.google.com/search?q=" + search_query
+    query = "https://www.google.com/search?q=" + search_query + "&num=" + str(search_result_limit)
     r = requests.get(query)
     html_doc = r.text
     soup = BeautifulSoup(html_doc, 'html.parser')
     for s in soup.find_all(attrs={'class': 'st'}):
+        print(s.text)
         search_sentiment_result.append(sentiment_analysis(s.text))
 
-    my_list = {i:search_sentiment_result.count(i) for i in search_sentiment_result}
+    my_list = {i: search_sentiment_result.count(i) for i in search_sentiment_result}
     print(max(my_list.items(), key=operator.itemgetter(1))[0])
 
 
