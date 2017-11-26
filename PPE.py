@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 
+from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
 
@@ -92,7 +93,7 @@ def tokenize(text):
 
 def get_promise_token():
     promise_token_dict = {}
-    toker = nltk.RegexpTokenizer(r'\w+')
+    token = nltk.RegexpTokenizer(r'\w+')
     with open("out/promises2.json") as data_file:
         data = json.load(data_file)
     for promise in data:
@@ -102,32 +103,17 @@ def get_promise_token():
             text = promise['promise_title']
         lowers = text.lower()
         no_punctuation = lowers.translate(str.maketrans("", "", string.punctuation))
-        tokens = toker.tokenize(no_punctuation)
+        tokens = token.tokenize(no_punctuation)
         promise_token_dict[promise['promise_title']] = " ".join(tokens)
     return promise_token_dict
 
 
-cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)), 3)
-
-# def cosine_similarity(vector1, vector2):
-#     dot_product = sum(p*q for p,q in zip(vector1, vector2))
-#     magnitude = np.math.sqrt(sum([val ** 2 for val in vector1])) * np.math.sqrt(sum([val ** 2 for val in vector2]))
-#     if not magnitude:
-#         return 0
-#     return dot_product/magnitude
-
-
 def google_search(search_query):
     search_sentiment_result = []
-    search_query = search_query.replace(" ", "+")
-    query = "https://www.google.com/search?q=" + search_query
-    r = requests.get(query)
-    html_doc = r.text
-    soup = BeautifulSoup(html_doc, 'html.parser')
-    for s in soup.find_all(attrs={'class': 'st'}):
+    gm = GoogleMiner()
+    for s in gm.get_search_summary(search_query):
         search_sentiment_result.append(sentiment_analysis(s.text))
-
-    my_list = {i:search_sentiment_result.count(i) for i in search_sentiment_result}
+    my_list = {i: search_sentiment_result.count(i) for i in search_sentiment_result}
     print(max(my_list.items(), key=operator.itemgetter(1))[0])
 
 
@@ -146,7 +132,7 @@ def sentiment_analysis(c):
 
 
 def match_articles(promise):
-    cosine_sim = cosine_similarity(tfidf_matrix[promise: promise+1], tfidf_matrix)
+    cosine_sim = cosine_similarity(tfidf_matrix[promise: promise + 1], tfidf_matrix)
     single_array = np.array(cosine_sim[0])
     article_array = single_array.argsort()[-6:][::-1]
     only_articles = [s for s in article_array if s > 1]
@@ -165,6 +151,9 @@ if __name__ == "__main__":
     # nltk.download('stopwords')
     # nltk.download('wordnet')
     # stemmed_tokens = stem_tokens(remove_stop_words(get_tokens()))
+    # print(GoogleMiner().get_search_summary("Donald Trump"))
+    # exit(0)
+    #
     tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
     article_tokens = get_article_token()
     promise_tokens = get_promise_token()
@@ -183,7 +172,7 @@ if __name__ == "__main__":
 
     match_articles(1)
     print("Promise sentiment according to Google Search is:")
-    google_search(all_tokens[0])
+    google_search(all_tokens[1])
     # print(tfidf_matrix)
 
     # feature_names = tfidf.get_feature_names()

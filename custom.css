@@ -1,0 +1,43 @@
+/*Some css fixes to use night theme with IPython slides*/
+@import url('https://fonts.googleapis.com/css?family=Varela+Round');
+
+.reveal {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 25px;
+}
+
+.reveal h1 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 70px;
+}
+.reveal h2 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 40px;
+}
+
+.reveal h3 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 30px;
+}
+
+.reveal h4 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 40px;
+    font-weight: normal;
+}
+
+.reveal h5 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: 30px;
+    font-weight: normal;
+}
+
+.reveal h6 {
+    /*margin: 0 0 20px 0;*/
+    font-family: 'Varela Round', sans-serif;
+    font-size: 25px;
+    font-weight: normal;
+}
+.reveal .progress span {
+    background: red;
+}
