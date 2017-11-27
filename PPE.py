@@ -68,13 +68,13 @@ def stem_tokens(tokens):
     return stemmed
 
 
-def get_article_token():
+def get_article_token(portion):
     article_token_dict = {}
     toker = nltk.RegexpTokenizer(r'\w+')
     with open("out/nyt_articles.json") as data_file:
         data = json.load(data_file)
     for article in data:
-        text = article['text']
+        text = article[portion]
         lowers = text.lower()
         no_punctuation = lowers.translate(str.maketrans("", "", string.punctuation))
         tokens = toker.tokenize(no_punctuation)
@@ -131,8 +131,8 @@ def sentiment_analysis(c):
             return "Positive Response"
 
 
-def match_articles(promise):
-    cosine_sim = cosine_similarity(tfidf_matrix[promise: promise + 1], tfidf_matrix)
+def match_articles(promise, t_m):
+    cosine_sim = cosine_similarity(t_m[promise: promise + 1], t_m)
     single_array = np.array(cosine_sim[0])
     article_array = single_array.argsort()[-6:][::-1]
     only_articles = [s for s in article_array if s > 1]
@@ -155,8 +155,12 @@ if __name__ == "__main__":
     # exit(0)
     #
     tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
-    article_tokens = get_article_token()
+    article_tokens = get_article_token('text')
+    summary_article_tokens = get_article_token('summary')
     promise_tokens = get_promise_token()
+    all_summary_tokens = []
+    all_summary_tokens.extend(list(promise_tokens.values()))
+    all_summary_tokens.extend(list(summary_article_tokens.values()))
     all_tokens = []
     all_tokens.extend(list(promise_tokens.values()))
     all_tokens.extend(list(article_tokens.values()))
@@ -166,13 +170,19 @@ if __name__ == "__main__":
     # test = tfidf.transform(list(promise_tokens.values()))
     # print(train.toarray()[0].tolist())
     tfidf_matrix = tfidf.fit_transform(all_tokens)
-    match_articles(0)
+    tfidf_matrix2 = tfidf.fit_transform(all_summary_tokens)
+
+    match_articles(0, tfidf_matrix)
     print("Promise sentiment according to Google Search is:")
     google_search(all_tokens[0])
 
-    match_articles(1)
+    match_articles(1, tfidf_matrix)
     print("Promise sentiment according to Google Search is:")
     google_search(all_tokens[1])
+
+    print("The results for the article summary are:")
+    match_articles(0, tfidf_matrix2)
+    match_articles(0, tfidf_matrix2)
     # print(tfidf_matrix)
 
     # feature_names = tfidf.get_feature_names()
