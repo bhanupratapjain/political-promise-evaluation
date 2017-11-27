@@ -119,7 +119,7 @@ def sentiment_analysis(text, nb=False):
         sa = TextBlob(text, analyzer=NaiveBayesAnalyzer()).sentiment
         return {"class": sa.classification, "p_pos": sa.p_pos, "p_neg": sa.p_neg}
     sa = TextBlob(text).sentiment
-    sa_class = "pos" if sa.polarity > 0 else "neg"
+    sa_class = "pos" if sa.polarity >= 0 else "neg"
     return {"class": sa_class, "polarity": sa.polarity, "subjectivity": sa.subjectivity}
 
 
