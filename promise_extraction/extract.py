@@ -12,7 +12,8 @@ if __name__ == '__main__':
         data.append({
             'promise_title': promise['title'],
             'promise_tag': promise['tags'],
-            'promise_description': promise['description']
+            'promise_description': promise['description'],
+            'promise_status': promise['status']
         })
     json.dump(data, file)
     file.close()

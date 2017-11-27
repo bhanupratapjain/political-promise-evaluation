@@ -183,6 +183,7 @@ if __name__ == "__main__":
     tfidf_matrix = get_tfidf_matrix(articles, promises)
     google_sum = get_google_results(10)
 
+
     results = {'article_text_nb': get_article_promise_progress(articles, promises, tfidf_matrix, nb=True),
                'article_text_pattern': get_article_promise_progress(articles, promises, tfidf_matrix, nb=False),
                'google_nb': get_google_promise_progress(google_sum, nb=True),
@@ -194,7 +195,7 @@ if __name__ == "__main__":
     results["article_summary_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=True)
 
     with open('out/results.json', 'w') as fout:
-        json.dump(results, fout)
+        json.dump(results, fout, indent=4)
 
     # with open('out/results.json', 'r') as df:
     #     res = json.load(df)
