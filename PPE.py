@@ -180,8 +180,8 @@ if __name__ == "__main__":
                'google_pattern': get_google_promise_progress(google_sum, nb=False)}
 
     tfidf_matrix_sum = get_tfidf_matrix(articles_sum, promises)
-    results["article_text_pattern"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
-    results["article_text_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
+    results["article_summary_pattern"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
+    results["article_summary_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
 
     with open('out/results.json', 'w') as fout:
         json.dump(results, fout)
