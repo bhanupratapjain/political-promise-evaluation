@@ -1,22 +1,18 @@
 import json
 import string
+from collections import defaultdict
 
 import nltk
-import requests
-import operator
 import numpy as np
-import numpy.linalg as LA
-
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from textblob import TextBlob
+from textblob.en.sentiments import NaiveBayesAnalyzer
 
 from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
-
-from textblob import TextBlob
-from bs4 import BeautifulSoup
 
 
 def get_tweets():
@@ -54,7 +50,6 @@ def get_tokens():
 def remove_stop_words(tokens):
     filtered = [w for w in tokens if not w in stopwords.words('english')]
     count = nltk.Counter(filtered)
-    print(count.most_common(10))
     return filtered
 
 
@@ -108,15 +103,6 @@ def get_promise_token():
     return promise_token_dict
 
 
-def google_search(search_query):
-    search_sentiment_result = []
-    gm = GoogleMiner()
-    for s in gm.get_search_summary(search_query):
-        search_sentiment_result.append(sentiment_analysis(s.text))
-    my_list = {i: search_sentiment_result.count(i) for i in search_sentiment_result}
-    print(max(my_list.items(), key=operator.itemgetter(1))[0])
-
-
 def label_polarity(polarity):
     if -1.0 <= polarity <= -0.5:
         return "Negative response"
@@ -130,8 +116,11 @@ def label_polarity(polarity):
 
 def sentiment_analysis(text, nb=False):
     if nb:
-        return TextBlob(text, analyzer=NaiveBayesAnalyzer()).sentiment
-    return TextBlob(text).sentiment
+        sa = TextBlob(text, analyzer=NaiveBayesAnalyzer()).sentiment
+        return {"class": sa.classification, "p_pos": sa.p_pos, "p_neg": sa.p_neg}
+    sa = TextBlob(text).sentiment
+    sa_class = "pos" if sa.polarity > 0 else "neg"
+    return {"class": sa_class, "polarity": sa.polarity, "subjectivity": sa.subjectivity}
 
 
 def get_tfidf_matrix(articles, promises):
@@ -151,43 +140,49 @@ def get_article_promise_progress(articles, promises, tfidf_matrix, nb=False):
         matched_articles = [s for s in article_array if s > 1]
         article_sentiment = defaultdict(lambda: [])
         for x in matched_articles:
-            article_sentiment[list(articles.keys())[x - 2]].append(sentiment_analysis(
+            article_sentiment[articles[list(articles.keys())[x - 2]]].append(sentiment_analysis(
                 articles[list(articles.keys())[x - 2]], nb))
         progress[promise] = article_sentiment
     return progress
 
 
+def get_google_results(num=10):
+    data = defaultdict(lambda: [])
+    gm = GoogleMiner()
+    for i, promise in enumerate(promises):
+        for s in gm.get_search_summary(promise, num):
+            text = s.text
+            tokens = tokenize(text)
+            data[promise].append(" ".join(remove_stop_words(tokens)))
+    return data
+
+
+def get_google_promise_progress(google_sum, nb):
+    progress = {}
+    for promise, g_sum in google_sum.items():
+        search_sentiment = defaultdict(lambda: [])
+        for s in g_sum:
+            search_sentiment[s] = sentiment_analysis(s, nb)
+        progress[promise] = search_sentiment
+    return progress
+
+
 if __name__ == "__main__":
-    articles = get_article_token()
     promises = get_promise_token()
+    articles = get_article_token("text")
+    articles_sum = get_article_token("summary")
     tfidf_matrix = get_tfidf_matrix(articles, promises)
-    results = {'article_nb': get_article_promise_progress(articles, promises, tfidf_matrix, nb=True),
-               'article_pattern': get_article_promise_progress(articles, promises, tfidf_matrix, nb=False)}
+    google_sum = get_google_results(10)
+
+    results = {'article_text_nb': get_article_promise_progress(articles, promises, tfidf_matrix, nb=True),
+               'article_text_pattern': get_article_promise_progress(articles, promises, tfidf_matrix, nb=False),
+               'google_nb': get_google_promise_progress(google_sum, nb=True),
+               'google_pattern': get_google_promise_progress(google_sum, nb=False)}
+
+    tfidf_matrix_sum = get_tfidf_matrix(articles_sum, promises)
+    results["article_text_pattern"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
+    results["article_text_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
+
+    with open('out/results.json', 'w') as fout:
+        json.dump(results, fout)
     print(json.dumps(results))
-
-    # match_articles(0)
-    # print("Promise sentiment according to Google Search is:")
-    # google_search(all_tokens[0])
-
-    # feature_names = tfidf.get_feature_names()
-    # for col in test.nonzero()[1]:
-    #     print (feature_names[col], ' - ', test[0, col])
-
-    # skl_tfidf_comparisons = []
-    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
-    #     for count_1, doc_1 in enumerate(tfidf_matrix.toarray()):
-    #         if count_0==count_1:
-    #             continue
-    #         skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-
-    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
-    #     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-    # print(linear_kernel(tfidf_matrix[0: 1], tfidf_matrix).flatten())
-    # print(linear_kernel(tfidf_matrix[1: 2], tfidf_matrix).flatten())
-    # print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
-    #
-    # print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
-    #
-    # feature_names = tfidf.get_feature_names()
-    #
-    # print(feature_names)
