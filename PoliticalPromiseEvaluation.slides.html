@@ -11913,7 +11913,7 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Inspiration">Inspiration<a class="anchor-link" href="#Inspiration">&#182;</a></h1>
+<h1 id="Problem">Problem<a class="anchor-link" href="#Problem">&#182;</a></h1><h4 id="Track-performance-of-political-leaders-through-continous-evaluation-of-promises-made-during-election-campaign">Track performance of political leaders through continous evaluation of promises made during election campaign<a class="anchor-link" href="#Track-performance-of-political-leaders-through-continous-evaluation-of-promises-made-during-election-campaign">&#182;</a></h4>
 </div>
 </div>
 </div></section><section>
@@ -11932,14 +11932,6 @@ a.anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><img src="img/politifact.png" alt=""></p>
 
-</div>
-</div>
-</div></section></section><section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Problem">Problem<a class="anchor-link" href="#Problem">&#182;</a></h1><h4 id="Track-performance-of-political-leaders-through-continous-evaluation-of-promises-made-during-election-campaign">Track performance of political leaders through continous evaluation of promises made during election campaign<a class="anchor-link" href="#Track-performance-of-political-leaders-through-continous-evaluation-of-promises-made-during-election-campaign">&#182;</a></h4>
 </div>
 </div>
 </div></section></section><section><section>
@@ -12435,7 +12427,7 @@ Text: the exodus began monday when merck s chief executive said he was resigning
 </div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[270]:</div>
+<div class="prompt input_prompt">In&nbsp;[277]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiment_1</span><span class="p">()</span>
@@ -12826,7 +12818,221 @@ wC9JkiR12P8D79SAFVvOu/cAAAAASUVORK5CYII=
 </div>
 </div>
 
-</div></section></section><section><section>
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Promise">Promise<a class="anchor-link" href="#Promise">&#182;</a></h2>
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[293]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;article_text_pattern&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;promise&#39;</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[293]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;Repeal and Replace Obamacare Act&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div></div><div class="fragment">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Top-Words-for-Article-3">Top Words for Article 3<a class="anchor-link" href="#Top-Words-for-Article-3">&#182;</a></h3>
+</div>
+</div>
+</div></div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[317]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">remove_stop_words</span><span class="p">(</span><span class="n">tokenize</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;article_text_pattern&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">])))</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[(&#39;mr&#39;, 18), (&#39;bill&#39;, 16), (&#39;senator&#39;, 16), (&#39;republican&#39;, 11), (&#39;wa&#39;, 10), (&#39;care&#39;, 9), (&#39;house&#39;, 9), (&#39;would&#39;, 8), (&#39;white&#39;, 8), (&#39;leader&#39;, 7)]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[341]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">Counter</span><span class="p">(</span><span class="n">remove_stop_words</span><span class="p">(</span><span class="n">tokenize</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;article_summary_pattern&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">])))</span>
+      <span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[(&#39;white&#39;, 4), (&#39;house&#39;, 4), (&#39;health&#39;, 3), (&#39;care&#39;, 3), (&#39;bill&#39;, 3), (&#39;wa&#39;, 2), (&#39;mr&#39;, 2), (&#39;announced&#39;, 1), (&#39;wanted&#39;, 1), (&#39;republican&#39;, 1)]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div></div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="ADJ-Count-for-Article-3">ADJ Count for Article 3<a class="anchor-link" href="#ADJ-Count-for-Article-3">&#182;</a></h2>
+</div>
+</div>
+</div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[342]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tags</span><span class="o">=</span><span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">remove_stop_words</span><span class="p">(</span><span class="n">tokenize</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;article_text_pattern&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">])))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Total ADJ in Text : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="k">Counter</span>(tag for word,tag in tags)[&#39;JJ&#39;])
+<span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">tag</span><span class="o">==</span><span class="s1">&#39;JJ&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Total ADJ in Text : 154
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[342]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;republican&#39;, 11), (&#39;white&#39;, 8), (&#39;new&#39;, 5), (&#39;senate&#39;, 4), (&#39;main&#39;, 3)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div></div><div class="fragment">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[345]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tags</span><span class="o">=</span><span class="n">nltk</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">remove_stop_words</span><span class="p">(</span><span class="n">tokenize</span><span class="p">(</span>
+    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;article_summary_pattern&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;result&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;text&#39;</span><span class="p">])))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Total ADJ in Summary : </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="k">Counter</span>(tag for word,tag in tags)[&#39;JJ&#39;])
+<span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">tag</span><span class="o">==</span><span class="s1">&#39;JJ&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Total ADJ in Summary : 19
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[345]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;white&#39;, 4), (&#39;late&#39;, 1), (&#39;republican&#39;, 1), (&#39;come&#39;, 1), (&#39;judged&#39;, 1)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div></div></section></section><section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
