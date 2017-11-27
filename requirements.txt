@@ -2,6 +2,7 @@ beautifulsoup4==4.6.0
 certifi==2017.7.27.1
 chardet==3.0.4
 cssselect==1.0.1
+cycler==0.10.0
 decorator==4.1.2
 feedfinder2==0.0.4
 feedparser==5.2.1
@@ -14,6 +15,7 @@ jieba3k==0.35.1
 jupyter-client==5.1.0
 jupyter-core==4.3.0
 lxml==4.1.0
+matplotlib==2.1.0
 newspaper3k==0.2.5
 nltk==3.2.5
 numpy==1.13.3
@@ -28,6 +30,7 @@ pkg-resources==0.0.0
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
 Pygments==2.2.0
+pyparsing==2.2.0
 python-dateutil==2.6.1
 pytz==2017.2
 PyYAML==3.12
@@ -38,6 +41,7 @@ scikit-learn==0.19.1
 scipy==1.0.0
 simplegeneric==0.8.1
 six==1.11.0
+textblob==0.14.0
 tldextract==2.1.0
 tornado==4.5.2
 traitlets==4.3.2

@@ -3,8 +3,7 @@ from bs4 import BeautifulSoup
 
 
 class GoogleMiner:
-
-    def get_search_summary(self,search_query,num=10):
+    def get_search_summary(self, search_query, num=10):
         search_query = search_query.replace(" ", "+")
         query = "https://www.google.com/search?q=" + search_query + "&num=" + str(num)
         r = requests.get(query)

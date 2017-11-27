@@ -132,17 +132,21 @@ def get_tfidf_matrix(articles, promises):
 
 
 def get_article_promise_progress(articles, promises, tfidf_matrix, nb=False):
-    progress = {}
+    progress = []
     for i, promise in enumerate(promises):
         cosine_sim = cosine_similarity(tfidf_matrix[i: i + 1], tfidf_matrix)
         single_array = np.array(cosine_sim[0])
         article_array = single_array.argsort()[-6:][::-1]
         matched_articles = [s for s in article_array if s > 1]
-        article_sentiment = defaultdict(lambda: [])
+        article_sentiment = []
         for x in matched_articles:
-            article_sentiment[articles[list(articles.keys())[x - 2]]].append(sentiment_analysis(
-                articles[list(articles.keys())[x - 2]], nb))
-        progress[promise] = article_sentiment
+            article_sentiment.append({
+                "text": articles[list(articles.keys())[x - 2]],
+                "sentiment": sentiment_analysis(articles[list(articles.keys())[x - 2]], nb)
+            })
+        progress.append({
+            "promise": promise,
+            "result": article_sentiment})
     return progress
 
 
@@ -158,12 +162,17 @@ def get_google_results(num=10):
 
 
 def get_google_promise_progress(google_sum, nb):
-    progress = {}
+    progress = []
     for promise, g_sum in google_sum.items():
-        search_sentiment = defaultdict(lambda: [])
+        search_sentiment = []
         for s in g_sum:
-            search_sentiment[s] = sentiment_analysis(s, nb)
-        progress[promise] = search_sentiment
+            search_sentiment.append({
+                "text": s,
+                "sentiment": sentiment_analysis(s, nb)
+            })
+        progress.append({
+            "promise": promise,
+            "result": search_sentiment})
     return progress
 
 
@@ -180,9 +189,16 @@ if __name__ == "__main__":
                'google_pattern': get_google_promise_progress(google_sum, nb=False)}
 
     tfidf_matrix_sum = get_tfidf_matrix(articles_sum, promises)
-    results["article_summary_pattern"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
-    results["article_summary_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=False)
+    results["article_summary_pattern"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum,
+                                                                      nb=False)
+    results["article_summary_nb"] = get_article_promise_progress(articles_sum, promises, tfidf_matrix_sum, nb=True)
 
     with open('out/results.json', 'w') as fout:
         json.dump(results, fout)
-    print(json.dumps(results))
+
+    # with open('out/results.json', 'r') as df:
+    #     res = json.load(df)
+    #
+    # polarity = []
+    # for r in res['article_summary_nb']:
+    #     polarity.append(r['polarity'])
