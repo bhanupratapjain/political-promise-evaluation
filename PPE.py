@@ -1,22 +1,19 @@
 import json
+import operator
 import string
+from collections import defaultdict
 
 import nltk
-import requests
-import operator
 import numpy as np
-import numpy.linalg as LA
-
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
-from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from textblob import TextBlob
+from textblob.en.sentiments import NaiveBayesAnalyzer
 
 from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
-
-from textblob import TextBlob
-from bs4 import BeautifulSoup
 
 
 def get_tweets():
@@ -117,83 +114,58 @@ def google_search(search_query):
     print(max(my_list.items(), key=operator.itemgetter(1))[0])
 
 
-def sentiment_analysis(c):
-    blob = TextBlob(c)
-    for sentence in blob.sentences:
-        polarity = sentence.sentiment.polarity
-        if -1.0 <= polarity <= -0.5:
-            return "Negative response"
-        elif -0.5 < polarity <= 0:
-            return "Slightly Negative response"
-        elif 0 <= polarity < 0.5:
-            return "Slightly Positive Response"
-        else:
-            return "Positive Response"
+def label_polarity(polarity):
+    if -1.0 <= polarity <= -0.5:
+        return "Negative response"
+    elif -0.5 < polarity <= 0:
+        return "Slightly Negative response"
+    elif 0 <= polarity < 0.5:
+        return "Slightly Positive Response"
+    else:
+        return "Positive Response"
 
 
-def match_articles(promise):
-    cosine_sim = cosine_similarity(tfidf_matrix[promise: promise + 1], tfidf_matrix)
-    single_array = np.array(cosine_sim[0])
-    article_array = single_array.argsort()[-6:][::-1]
-    only_articles = [s for s in article_array if s > 1]
-    promise_statement = all_tokens[promise]
-    print("The promise made by the candidate was: \n", promise_statement)
-    count = 1
-    for x in only_articles:
-        print(count, all_tokens[x] + "\n")
-        print(sentiment_analysis(all_tokens[x]))
-        count += 1
+def sentiment_analysis(text, nb=False):
+    if nb:
+        return TextBlob(text, analyzer=NaiveBayesAnalyzer()).sentiment
+    return TextBlob(text).sentiment
+
+
+def get_tfidf_matrix(articles, promises):
+    tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
+    documents = []
+    documents.extend(list(promises.values()))
+    documents.extend(list(articles.values()))
+    return tfidf.fit_transform(documents)
+
+
+def get_article_promise_progress(articles, promises, tfidf_matrix, nb=False):
+    progress = {}
+    for i, promise in enumerate(promises):
+        cosine_sim = cosine_similarity(tfidf_matrix[i: i + 1], tfidf_matrix)
+        single_array = np.array(cosine_sim[0])
+        article_array = single_array.argsort()[-6:][::-1]
+        matched_articles = [s for s in article_array if s > 1]
+        article_sentiment = defaultdict(lambda: [])
+        for x in matched_articles:
+            article_sentiment[list(articles.keys())[x - 2]].append(sentiment_analysis(
+                articles[list(articles.keys())[x - 2]], nb))
+        progress[promise] = article_sentiment
+    return progress
 
 
 if __name__ == "__main__":
-    # pprint.pprint(get_tweets())
-    # get_articles()
-    # nltk.download('stopwords')
-    # nltk.download('wordnet')
-    # stemmed_tokens = stem_tokens(remove_stop_words(get_tokens()))
-    # print(GoogleMiner().get_search_summary("Donald Trump"))
-    # exit(0)
-    #
-    tfidf = TfidfVectorizer(tokenizer=tokenize, stop_words='english')
-    article_tokens = get_article_token()
-    promise_tokens = get_promise_token()
-    all_tokens = []
-    all_tokens.extend(list(promise_tokens.values()))
-    all_tokens.extend(list(article_tokens.values()))
-    # print(all_tokens, '\n')
-    # print(list(promise_tokens.values()))
-    # train = tfidf.fit_transform(list(promise_tokens.values()))
-    # test = tfidf.transform(list(promise_tokens.values()))
-    # print(train.toarray()[0].tolist())
-    tfidf_matrix = tfidf.fit_transform(all_tokens)
-    match_articles(0)
-    print("Promise sentiment according to Google Search is:")
-    google_search(all_tokens[0])
+    articles = get_article_token()
+    promises = get_promise_token()
+    tfidf_matrix = get_tfidf_matrix(articles, promises)
+    results = {'article_nb': get_article_promise_progress(articles, promises, tfidf_matrix, nb=True),
+               'article_pattern': get_article_promise_progress(articles, promises, tfidf_matrix, nb=False)}
+    print(json.dumps(results))
 
-    match_articles(1)
-    print("Promise sentiment according to Google Search is:")
-    google_search(all_tokens[1])
-    # print(tfidf_matrix)
+    # match_articles(0)
+    # print("Promise sentiment according to Google Search is:")
+    # google_search(all_tokens[0])
 
-    # feature_names = tfidf.get_feature_names()
-    # for col in test.nonzero()[1]:
-    #     print (feature_names[col], ' - ', test[0, col])
-
-    # skl_tfidf_comparisons = []
-    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
-    #     for count_1, doc_1 in enumerate(tfidf_matrix.toarray()):
-    #         if count_0==count_1:
-    #             continue
-    #         skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-
-    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
-    #     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
-    # print(linear_kernel(tfidf_matrix[0: 1], tfidf_matrix).flatten())
-    # print(linear_kernel(tfidf_matrix[1: 2], tfidf_matrix).flatten())
-    # print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
-    #
-    # print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
-    #
-    # feature_names = tfidf.get_feature_names()
-    #
-    # print(feature_names)
+    # match_articles(1)
+    # print("Promise sentiment according to Google Search is:")
+    # google_search(all_tokens[1])
