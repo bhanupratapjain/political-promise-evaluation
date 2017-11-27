@@ -1,19 +1,22 @@
 import json
-import operator
 import string
-from collections import defaultdict
 
 import nltk
+import requests
+import operator
 import numpy as np
+import numpy.linalg as LA
+
 from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from textblob import TextBlob
-from textblob.en.sentiments import NaiveBayesAnalyzer
+from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 
 from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
+
+from textblob import TextBlob
+from bs4 import BeautifulSoup
 
 
 def get_tweets():
@@ -65,13 +68,13 @@ def stem_tokens(tokens):
     return stemmed
 
 
-def get_article_token():
+def get_article_token(portion):
     article_token_dict = {}
     toker = nltk.RegexpTokenizer(r'\w+')
     with open("out/nyt_articles.json") as data_file:
         data = json.load(data_file)
     for article in data:
-        text = article['text']
+        text = article[portion]
         lowers = text.lower()
         no_punctuation = lowers.translate(str.maketrans("", "", string.punctuation))
         tokens = toker.tokenize(no_punctuation)
@@ -166,6 +169,25 @@ if __name__ == "__main__":
     # print("Promise sentiment according to Google Search is:")
     # google_search(all_tokens[0])
 
-    # match_articles(1)
-    # print("Promise sentiment according to Google Search is:")
-    # google_search(all_tokens[1])
+    # feature_names = tfidf.get_feature_names()
+    # for col in test.nonzero()[1]:
+    #     print (feature_names[col], ' - ', test[0, col])
+
+    # skl_tfidf_comparisons = []
+    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
+    #     for count_1, doc_1 in enumerate(tfidf_matrix.toarray()):
+    #         if count_0==count_1:
+    #             continue
+    #         skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
+
+    # for count_0, doc_0 in enumerate(tfidf_matrix.toarray()):
+    #     skl_tfidf_comparisons.append((cosine_similarity(doc_0, doc_1), count_0, count_1))
+    # print(linear_kernel(tfidf_matrix[0: 1], tfidf_matrix).flatten())
+    # print(linear_kernel(tfidf_matrix[1: 2], tfidf_matrix).flatten())
+    # print(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix))
+    #
+    # print(cosine_similarity(tfidf_matrix[1:2], tfidf_matrix))
+    #
+    # feature_names = tfidf.get_feature_names()
+    #
+    # print(feature_names)
