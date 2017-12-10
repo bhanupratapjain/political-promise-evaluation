@@ -107,3 +107,6 @@ ENV/
 
 ##MAC-Specific
 .DS_Store
+
+data/
+out/
