@@ -9,9 +9,12 @@ import string
 import sys
 from collections import defaultdict, Counter
 
+import matplotlib
 import matplotlib.pyplot as plt
 import nltk
 import numpy as np
+from matplotlib import pyplot
+from mpl_toolkits.mplot3d import Axes3D
 from nltk.corpus import stopwords, wordnet
 from nltk.sentiment import SentimentIntensityAnalyzer
 from pygments.util import xrange
@@ -640,9 +643,19 @@ def experiment_train_data_distribution():
     ])
     random_samples = sorted(random.sample(xrange(len(train_data)), 1000))
     data = pipeline.fit_transform([train_data[i] for i in random_samples]).todense()
-    pca = PCA(n_components=2).fit(data)
+    pca = PCA(n_components=3).fit(data)
     X = pca.transform(data)
-    plt.scatter(X[:, 0], X[:, 1], c=[train_labels[i] for i in random_samples])
+    fig = pyplot.figure()
+    ax = Axes3D(fig)
+    # ax.scatter(sequence_containing_x_vals, sequence_containing_y_vals, sequence_containing_z_vals)
+    # pyplot.show()
+
+    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=['tomato' if train_labels[i] == 1 else 'teal' for i in random_samples])
+    # plt.legend([a.collections[0], b.collections[0]], ["Label 0", "Label 1"],
+    #            loc="upper right")
+    scatter1_proxy = matplotlib.lines.Line2D([0], [0], linestyle="none", c='tomato',marker = 'o')
+    scatter2_proxy = matplotlib.lines.Line2D([0], [0], linestyle="none", c='teal',marker = 'o')
+    ax.legend([scatter1_proxy, scatter2_proxy], ['label_1', 'label_0'], numpoints=1)
     plt.savefig("plots/train-data-distribution.png")
     plt.close()
 
