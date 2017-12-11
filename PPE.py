@@ -444,7 +444,7 @@ def svm_train_experiment_5():
     print(cm)
 
 
-def rf_train_experiment_7():
+def rf_train_experiment_6():
     articles, labels = get_train_articles()
     docs_train, docs_test, y_train, y_test = train_test_split(
         articles, labels, test_size=0.25, random_state=None)
@@ -523,7 +523,7 @@ def nb_test_experiment_3():
     print(nltk.FreqDist(label_1_keywords).most_common(10))
 
 
-def nb_matched_test_experiment_8():
+def nb_matched_test_experiment_7():
     promises = get_promise_token()
     test_articles = get_test_articles(promises)
     train_articles, train_labels = get_train_articles()
@@ -585,7 +585,7 @@ def svm_test_experiment_6():
     print(nltk.FreqDist(label_1_keywords).most_common(10))
 
 
-def experiment_4():
+def nb_google_experiment_4():
     promises = get_promise_token()
     test_data = list(itertools.chain.from_iterable(get_google_results(promises, 10).values()))
     train_articles, train_labels = get_train_articles()
@@ -688,14 +688,12 @@ def experiment_1_results_analysis():
 
 
 if __name__ == "__main__":
-    # experiment_1()
+    experiment_1()
     experiment_1_results_analysis()
-    # generate_articles_test_data()
-    # experiment_train_data_distribution()
-    # nb_train_experiment_2()
-    # nb_test_experiment_3()
-    # experiment_4()
-    # svm_train_experiment_5()
-    # svm_test_experiment_6()
-    # rf_train_experiment_7()
-    # nb_matched_test_experiment_8()
+    experiment_train_data_distribution()
+    nb_train_experiment_2()
+    nb_test_experiment_3()
+    nb_google_experiment_4()
+    svm_train_experiment_5()
+    rf_train_experiment_6()
+    nb_matched_test_experiment_7()

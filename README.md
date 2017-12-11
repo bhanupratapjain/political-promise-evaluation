@@ -1,6 +1,13 @@
 # Political Promise Evaluation
 PPE provides a unified view of promises made by Political Candidates while campaigning and the promises fulfilled during their tenure. PPE aims to scour Political Manifesto’s and summarize political promises. We will extract relevant Tweets on Twitter and then evaluate the the fulfillment status of the promises
 
+## Running Instructions
+```
+- Setup Python Version >= 3
+- pip install -r requirements.txt
+- python PPE.py
+- Check the output on console and under dir "out" and "plots" (Exsiting data will be overwriten)
+``` 
 
 ## Experiments 
 ### 1) Lexicon Based
