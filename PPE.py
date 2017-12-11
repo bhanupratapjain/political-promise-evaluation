@@ -1,6 +1,7 @@
 import csv
 import glob
 import json
+import random
 import string
 import sys
 from collections import defaultdict, Counter
@@ -13,6 +14,8 @@ import numpy as np
 from matplotlib import cm
 from nltk.corpus import stopwords, wordnet
 from nltk.sentiment import SentimentIntensityAnalyzer
+from pygments.util import xrange
+from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.linear_model import SGDClassifier
@@ -420,6 +423,7 @@ def nb_train_experiment_2():
     cm = metrics.confusion_matrix(y_test, y_predicted)
     print(cm)
 
+
 def svm_train_experiment_5():
     articles, labels = get_train_articles()
     docs_train, docs_test, y_train, y_test = train_test_split(
@@ -428,12 +432,44 @@ def svm_train_experiment_5():
         ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
         ('clf', SGDClassifier())
     ])
-    clf = pipeline.fit(docs_train,y_train)
-    y_predicted = cl1f.predict(docs_test)
+    clf = pipeline.fit(docs_train, y_train)
+    y_predicted = clf.predict(docs_test)
     print(metrics.classification_report(y_test, y_predicted,
                                         target_names=["No Progress", "Progress"]))
     cm = metrics.confusion_matrix(y_test, y_predicted)
     print(cm)
+
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer())
+    ])
+    random_samples = sorted(random.sample(xrange(len(docs_train)), 1000))
+    data = pipeline.fit_transform([docs_train[i] for i in random_samples]).todense()
+    pca = PCA(n_components=2).fit(data)
+    X = pca.transform(data)
+    # plt.scatter(X[:, 0], X[:, 1], c=[y_train[i] for i in random_samples])
+    # plt.show()  # not required if using ipython notebook
+    #
+    # # plot separating hyperplanes and samples
+    plt.scatter(X[:, 0], X[:, 1], c=[y_train[i] for i in random_samples], cmap=plt.cm.Paired, edgecolors='k')
+    plt.legend()
+
+    # plot the decision functions for both classifiers
+    ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # create grid to evaluate model
+    xx = np.linspace(xlim[0], xlim[1], 30)
+    yy = np.linspace(ylim[0], ylim[1], 30)
+    YY, XX = np.meshgrid(yy, xx)
+    xy = np.vstack([XX.ravel(), YY.ravel()]).T
+
+    # get the separating hyperplane
+    Z = clf.decision_function(xy).reshape(XX.shape)
+    # plot decision boundary and margins
+    a = ax.contour(XX, YY, Z, colors='k', levels=[0], alpha=0.5, linestyles=['-'])
+    plt.show()
+
 
 def rf_train_experiment_7():
     articles, labels = get_train_articles()
@@ -443,12 +479,13 @@ def rf_train_experiment_7():
         ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
         ('clf', RandomForestClassifier())
     ])
-    clf = pipeline.fit(docs_train,y_train)
+    clf = pipeline.fit(docs_train, y_train)
     y_predicted = clf.predict(docs_test)
     print(metrics.classification_report(y_test, y_predicted,
                                         target_names=["No Progress", "Progress"]))
     cm = metrics.confusion_matrix(y_test, y_predicted)
     print(cm)
+
 
 def get_test_articles(promises):
     articles = []
@@ -490,8 +527,8 @@ def nb_test_experiment_3():
             print("Prediction: ", y_predicted[i])
             print("\n")
     plt.figure(figsize=(15, 8))
-    wordcloud_0 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_0_keywords))
-    wordcloud_1 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_1_keywords))
+    wordcloud_0 = WordCloud(width=1000, height=500, background_color="white").generate(' '.join(label_0_keywords))
+    wordcloud_1 = WordCloud(width=1000, height=500, background_color="white").generate(' '.join(label_1_keywords))
 
     # plt.subplot(121)
     plt.imshow(wordcloud_0)
@@ -511,6 +548,7 @@ def nb_test_experiment_3():
     pprint.pprint(Counter(label_1_keywords))
     print(nltk.FreqDist(label_1_keywords))
     print(nltk.FreqDist(label_1_keywords).most_common(10))
+
 
 def svm_test_experiment_6():
     promises = get_promise_token()
@@ -538,8 +576,8 @@ def svm_test_experiment_6():
             print("Prediction: ", y_predicted[i])
             print("\n")
     plt.figure(figsize=(15, 8))
-    wordcloud_0 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_0_keywords))
-    wordcloud_1 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_1_keywords))
+    wordcloud_0 = WordCloud(width=1000, height=500, background_color="white").generate(' '.join(label_0_keywords))
+    wordcloud_1 = WordCloud(width=1000, height=500, background_color="white").generate(' '.join(label_1_keywords))
 
     # plt.subplot(121)
     plt.imshow(wordcloud_0)
@@ -560,6 +598,7 @@ def svm_test_experiment_6():
     print(nltk.FreqDist(label_1_keywords))
     print(nltk.FreqDist(label_1_keywords).most_common(10))
 
+
 def experiment_4():
     promises = get_promise_token()
     test_data = list(itertools.chain.from_iterable(get_google_results(promises, 10).values()))
@@ -574,6 +613,7 @@ def experiment_4():
         print(a)
         print(y_predicted[i])
 
+
 def get_colors():
     return plt.rcParams['axes.prop_cycle'].by_key()['color']
 
@@ -582,12 +622,12 @@ def set_facecolor(rects):
     colors = get_colors()
     ncolor = len(colors)
     for index, rect in enumerate(rects):
-        color = colors[index%ncolor]
+        color = colors[index % ncolor]
         rect.set_facecolor(color)
 
 
 def experiment_train_data_distribution():
-    train_data,train_labels = get_train_articles()
+    train_data, train_labels = get_train_articles()
     label_counts = Counter(train_labels)
     publications = []
     with open('out/articles_train_data.json', 'r') as fin:
@@ -595,8 +635,8 @@ def experiment_train_data_distribution():
         for i, rec in enumerate(data):
             publications.append(rec['publication'])
     pub_count = Counter(publications)
-    pub_name, pub_val = [],[]
-    for k,v in pub_count.items():
+    pub_name, pub_val = [], []
+    for k, v in pub_count.items():
         pub_name.append(k)
         pub_val.append(v)
 
@@ -606,7 +646,7 @@ def experiment_train_data_distribution():
 
     plt.style.use('ggplot')
 
-    plt.bar(["0","1"], [label_counts[0],label_counts[1]],color=plt.rcParams['axes.prop_cycle'].by_key()['color'])
+    plt.bar(["0", "1"], [label_counts[0], label_counts[1]], color=plt.rcParams['axes.prop_cycle'].by_key()['color'])
     plt.xlabel("Labels")
     plt.ylabel("Count")
     plt.tight_layout()
@@ -614,9 +654,9 @@ def experiment_train_data_distribution():
 
     pub_x = np.arange(len(pub_name))
     print(pub_x)
-    set_facecolor(plt.bar(pub_x, pub_val,color=plt.rcParams['axes.prop_cycle'].by_key()['color']))
+    set_facecolor(plt.bar(pub_x, pub_val, color=plt.rcParams['axes.prop_cycle'].by_key()['color']))
     plt.xlabel("Publications")
-    plt.xticks(pub_x, pub_name,rotation='vertical')
+    plt.xticks(pub_x, pub_name, rotation='vertical')
     plt.ylabel("Count")
     plt.tight_layout()
     plt.savefig("plots/train-publication-distribution.png")
@@ -625,11 +665,11 @@ def experiment_train_data_distribution():
 if __name__ == "__main__":
     # experiment_1()
     # generate_articles_test_data()
-    experiment_train_data_distribution()
+    # experiment_train_data_distribution()
     # nb_train_experiment_2()
     # nb_test_experiment_3()
     # experiment_4()
-    # svm_train_experiment_5()
+    svm_train_experiment_5()
     # svm_test_experiment_6()
     # rf_train_experiment_7()
     # get_articles()
