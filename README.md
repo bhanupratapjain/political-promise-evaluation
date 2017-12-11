@@ -9,6 +9,14 @@ PPE provides a unified view of promises made by Political Candidates while campa
 - python PPE.py
 - Check the output on console and under dir "out" and "plots" (Exsiting data will be overwriten)
 ``` 
+## Code Structure
+### Data Miners
+    - `miners/GoogleMiner.py`: Google Summary Miner
+    - `miners/NewsMiner.py` : News Articles Miner
+    - `miners/TwitterMiner.py` : Twitter Miner 
+    - `promise_extraction/extract.py` : Promises
+### Model Generation And Evaluation
+    - 'PPE.py`
 
 ## Experiments 
 ### 1) Lexicon Based

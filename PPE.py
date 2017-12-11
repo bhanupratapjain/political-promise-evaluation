@@ -247,7 +247,7 @@ def get_google_promise_progress(google_sum, nb):
     return progress
 
 
-def experiment_1():
+def lexicon_experiment_1():
     promises = get_promise_token()
     articles = get_article_token("text")
     articles_sum = get_article_token("summary")
@@ -688,12 +688,12 @@ def experiment_1_results_analysis():
 
 
 if __name__ == "__main__":
-    experiment_1()
+    lexicon_experiment_1()
     experiment_1_results_analysis()
-    experiment_train_data_distribution()
     nb_train_experiment_2()
     nb_test_experiment_3()
     nb_google_experiment_4()
     svm_train_experiment_5()
     rf_train_experiment_6()
     nb_matched_test_experiment_7()
+    experiment_train_data_distribution()
