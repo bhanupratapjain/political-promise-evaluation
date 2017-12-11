@@ -110,3 +110,7 @@ ENV/
 
 data/
 out/
+
+# Setup files
+miners/setup.py
+miners/setuptools-33.1.1.zip
