@@ -14,7 +14,7 @@ PPE provides a unified view of promises made by Political Candidates while campa
 
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     
-**Promise:**Middle Class Tax Relief And Simplification Act
+**Promise:** Middle Class Tax Relief And Simplification Act
 
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     
