@@ -27,8 +27,8 @@ Total Articles = 624
 Predicted Label 1 = 24
 Predicted Label 0 = 600
 
-Top KeyWords in Label 1 Predictions =  
-Top Keywords in Label 0 Predictions = 
+Top KeyWords in Label 1 Predictions =  results/experiment3.txt
+Top Keywords in Label 0 Predictions =  results/experiment3.txt
 
 
 ## Experiment 4
