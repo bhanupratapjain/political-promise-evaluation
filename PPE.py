@@ -10,9 +10,12 @@ import matplotlib.pyplot as plt
 
 import nltk
 import numpy as np
+from matplotlib import cm
 from nltk.corpus import stopwords, wordnet
 from nltk.sentiment import SentimentIntensityAnalyzer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.linear_model import SGDClassifier
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
@@ -283,7 +286,7 @@ def save_articles_with_sentiment():
         print(i)
         ss = sid.polarity_scores(article['text'])
         article["polarity"] = ss
-    with open('out/articles_test_data_with_sentiment.json', 'w') as fout:
+    with open('out/articles_train_data_with_sentiment.json', 'w') as fout:
         json.dump(articles, fout)
 
 
@@ -327,12 +330,12 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def generate_articles_test_data():
+def generate_articles_train_data():
     progress_syn, progress_ant = get_progress_words()
     print(progress_syn, progress_ant)
     pos_label = 0
     neg_label = 0
-    with open('out/articles_test_data_with_sentiment.json', 'r') as fin:
+    with open('out/articles_train_data_with_sentiment.json', 'r') as fin:
         data = json.load(fin)
         for i, rec in enumerate(data):
             syn_count, ant_count, total_count = get_progressive_counts(rec['text'], progress_syn, progress_ant)
@@ -356,15 +359,15 @@ def generate_articles_test_data():
             rec['pos_progress'] = pp
             rec['neg_progress'] = pn
             rec['norm_progress'] = ppn
-        with open('out/articles_test_data.json', 'w') as fout:
+        with open('out/articles_train_data.json', 'w') as fout:
             json.dump(data, fout)
         print("pos_label=%s; neg_label=%s" % (pos_label, neg_label))
 
 
-def get_train_articles():
+def get_train_articles(balanced=False):
     articles = []
     labels = []
-    with open('out/articles_test_data.json', 'r') as fin:
+    with open('out/articles_train_data.json', 'r') as fin:
         data = json.load(fin)
         for i, rec in enumerate(data):
             if 'text' in rec and 'label' in rec:
@@ -373,9 +376,8 @@ def get_train_articles():
     return articles, labels
 
 
-def experiment_2():
+def nb_train_experiment_2():
     # nltk.download('vader_lexicon')
-    promises = get_promise_token()
     articles, labels = get_train_articles()
 
     docs_train, docs_test, y_train, y_test = train_test_split(
@@ -384,7 +386,7 @@ def experiment_2():
     # TASK: Build a vectorizer / classifier pipeline that filters out tokens
     # that are too rare or too frequent
     pipeline = Pipeline([
-        ('vect', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
         ('clf', MultinomialNB()),
     ])
 
@@ -418,6 +420,35 @@ def experiment_2():
     cm = metrics.confusion_matrix(y_test, y_predicted)
     print(cm)
 
+def svm_train_experiment_5():
+    articles, labels = get_train_articles()
+    docs_train, docs_test, y_train, y_test = train_test_split(
+        articles, labels, test_size=0.25, random_state=None)
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('clf', SGDClassifier())
+    ])
+    clf = pipeline.fit(docs_train,y_train)
+    y_predicted = cl1f.predict(docs_test)
+    print(metrics.classification_report(y_test, y_predicted,
+                                        target_names=["No Progress", "Progress"]))
+    cm = metrics.confusion_matrix(y_test, y_predicted)
+    print(cm)
+
+def rf_train_experiment_7():
+    articles, labels = get_train_articles()
+    docs_train, docs_test, y_train, y_test = train_test_split(
+        articles, labels, test_size=0.25, random_state=None)
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('clf', RandomForestClassifier())
+    ])
+    clf = pipeline.fit(docs_train,y_train)
+    y_predicted = clf.predict(docs_test)
+    print(metrics.classification_report(y_test, y_predicted,
+                                        target_names=["No Progress", "Progress"]))
+    cm = metrics.confusion_matrix(y_test, y_predicted)
+    print(cm)
 
 def get_test_articles(promises):
     articles = []
@@ -433,7 +464,7 @@ def get_test_articles(promises):
     return articles
 
 
-def experiment_3():
+def nb_test_experiment_3():
     promises = get_promise_token()
     label_1_keywords = []
     label_0_keywords = []
@@ -442,7 +473,7 @@ def experiment_3():
     test_articles = list(articles.values())
     train_articles, train_labels = get_train_articles()
     pipeline = Pipeline([
-        ('vect', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
         ('clf', MultinomialNB()),
     ])
     pipeline.fit(train_articles, train_labels)
@@ -481,6 +512,53 @@ def experiment_3():
     print(nltk.FreqDist(label_1_keywords))
     print(nltk.FreqDist(label_1_keywords).most_common(10))
 
+def svm_test_experiment_6():
+    promises = get_promise_token()
+    label_1_keywords = []
+    label_0_keywords = []
+    # test_articles = get_test_articles(promises)
+    articles = get_article_token("text")
+    test_articles = list(articles.values())
+    train_articles, train_labels = get_train_articles()
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('clf', MultinomialNB()),
+    ])
+    pipeline.fit(train_articles, train_labels)
+    y_predicted = pipeline.predict(test_articles)
+    with open("out/nyt_articles_latest.json") as data_file:
+        a_data = json.load(data_file)
+        for i, a_id in enumerate(list(articles.keys())):
+            if y_predicted[i] == 0:
+                label_0_keywords.extend(a_data[a_id]['keywords_1'])
+            else:
+                label_1_keywords.extend(a_data[a_id]['keywords_1'])
+            print("Summary: ", a_data[a_id]['summary'])
+            print("Keywords: ", a_data[a_id]['keywords_1'])
+            print("Prediction: ", y_predicted[i])
+            print("\n")
+    plt.figure(figsize=(15, 8))
+    wordcloud_0 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_0_keywords))
+    wordcloud_1 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_1_keywords))
+
+    # plt.subplot(121)
+    plt.imshow(wordcloud_0)
+    plt.axis("off")
+    plt.savefig('plots/experiment-3-label_0.png')
+
+    # plt.subplot(122)
+    plt.imshow(wordcloud_1)
+    plt.axis("off")
+    plt.savefig('plots/experiment-3-label_1.png')
+    # plt.show()
+
+    print("Label 0 Keywords Distribution")
+    pprint.pprint(nltk.FreqDist(label_0_keywords))
+    print(nltk.FreqDist(label_0_keywords).most_common(10))
+    print("Label 1 Keywords Distribution")
+    pprint.pprint(Counter(label_1_keywords))
+    print(nltk.FreqDist(label_1_keywords))
+    print(nltk.FreqDist(label_1_keywords).most_common(10))
 
 def experiment_4():
     promises = get_promise_token()
@@ -496,12 +574,63 @@ def experiment_4():
         print(a)
         print(y_predicted[i])
 
+def get_colors():
+    return plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+
+def set_facecolor(rects):
+    colors = get_colors()
+    ncolor = len(colors)
+    for index, rect in enumerate(rects):
+        color = colors[index%ncolor]
+        rect.set_facecolor(color)
+
+
+def experiment_train_data_distribution():
+    train_data,train_labels = get_train_articles()
+    label_counts = Counter(train_labels)
+    publications = []
+    with open('out/articles_train_data.json', 'r') as fin:
+        data = json.load(fin)
+        for i, rec in enumerate(data):
+            publications.append(rec['publication'])
+    pub_count = Counter(publications)
+    pub_name, pub_val = [],[]
+    for k,v in pub_count.items():
+        pub_name.append(k)
+        pub_val.append(v)
+
+    print("Total Test Data Size :", len(train_labels))
+    print(label_counts)
+    print(pub_count)
+
+    plt.style.use('ggplot')
+
+    plt.bar(["0","1"], [label_counts[0],label_counts[1]],color=plt.rcParams['axes.prop_cycle'].by_key()['color'])
+    plt.xlabel("Labels")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.savefig("plots/train-label-distribution.png")
+
+    pub_x = np.arange(len(pub_name))
+    print(pub_x)
+    set_facecolor(plt.bar(pub_x, pub_val,color=plt.rcParams['axes.prop_cycle'].by_key()['color']))
+    plt.xlabel("Publications")
+    plt.xticks(pub_x, pub_name,rotation='vertical')
+    plt.ylabel("Count")
+    plt.tight_layout()
+    plt.savefig("plots/train-publication-distribution.png")
+
 
 if __name__ == "__main__":
     # experiment_1()
     # generate_articles_test_data()
-    # experiment_2()
-    experiment_3()
+    experiment_train_data_distribution()
+    # nb_train_experiment_2()
+    # nb_test_experiment_3()
     # experiment_4()
+    # svm_train_experiment_5()
+    # svm_test_experiment_6()
+    # rf_train_experiment_7()
     # get_articles()
     # print(len(get_article_token('text')))
