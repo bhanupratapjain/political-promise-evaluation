@@ -15,7 +15,7 @@ PPE provides a unified view of promises made by Political Candidates while campa
     - miners/NewsMiner.py : News Articles Miner
     - miners/TwitterMiner.py : Twitter Miner 
     - promise_extraction/extract.py : Promises
-### Model Generation And Evaluation
+### Document Matching And Promise Evaluation
     - PPE.py
 
 ## Experiments 
