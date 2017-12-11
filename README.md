@@ -11,12 +11,12 @@ PPE provides a unified view of promises made by Political Candidates while campa
 ``` 
 ## Code Structure
 ### Data Miners
-    - `miners/GoogleMiner.py`: Google Summary Miner
-    - `miners/NewsMiner.py` : News Articles Miner
-    - `miners/TwitterMiner.py` : Twitter Miner 
-    - `promise_extraction/extract.py` : Promises
+    - miners/GoogleMiner.py: Google Summary Miner
+    - miners/NewsMiner.py : News Articles Miner
+    - miners/TwitterMiner.py : Twitter Miner 
+    - promise_extraction/extract.py : Promises
 ### Model Generation And Evaluation
-    - 'PPE.py`
+    - PPE.py
 
 ## Experiments 
 ### 1) Lexicon Based
@@ -100,7 +100,7 @@ PPE provides a unified view of promises made by Political Candidates while campa
 
     [1, 1, 1, 0, 1, 1, 0, 1, 1, 1]
 
-### 2) Naive Bayes with Train  (unbalanced)
+### 2) Naive Bayes with Train
 http://scikit-learn.org/stable/modules/naive_bayes.html=
 
     0 params - {'vect__ngram_range': (1, 1)}; mean - 0.82; std - 0.00
@@ -131,7 +131,7 @@ Identified all summaries to zero.
 `results/experiment4.txt`
     
 
-### 5) SVM with train (unbalanced)
+### 5) SVM with train
 
 http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
              precision    recall  f1-score   support
@@ -147,7 +147,7 @@ http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassif
 
 
 
-### 6) Random Forest with Train (unbalanced)
+### 6) Random Forest with Train
 
 http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
 
