@@ -1,28 +1,28 @@
 import csv
 import glob
+import itertools
 import json
+import operator
+import pprint
 import random
 import string
 import sys
 from collections import defaultdict, Counter
-import itertools
-import pprint
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import nltk
 import numpy as np
-from matplotlib import cm
 from nltk.corpus import stopwords, wordnet
 from nltk.sentiment import SentimentIntensityAnalyzer
 from pygments.util import xrange
+from sklearn import metrics
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
-
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from textblob import TextBlob
@@ -32,7 +32,8 @@ from wordcloud import WordCloud
 from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
 from miners.TwitterMiner import TwitterMiner
-from sklearn import metrics
+
+plt.style.use('ggplot')
 
 
 def get_tweets():
@@ -439,37 +440,6 @@ def svm_train_experiment_5():
     cm = metrics.confusion_matrix(y_test, y_predicted)
     print(cm)
 
-    pipeline = Pipeline([
-        ('tfidf', TfidfVectorizer())
-    ])
-    random_samples = sorted(random.sample(xrange(len(docs_train)), 1000))
-    data = pipeline.fit_transform([docs_train[i] for i in random_samples]).todense()
-    pca = PCA(n_components=2).fit(data)
-    X = pca.transform(data)
-    # plt.scatter(X[:, 0], X[:, 1], c=[y_train[i] for i in random_samples])
-    # plt.show()  # not required if using ipython notebook
-    #
-    # # plot separating hyperplanes and samples
-    plt.scatter(X[:, 0], X[:, 1], c=[y_train[i] for i in random_samples], cmap=plt.cm.Paired, edgecolors='k')
-    plt.legend()
-
-    # plot the decision functions for both classifiers
-    ax = plt.gca()
-    xlim = ax.get_xlim()
-    ylim = ax.get_ylim()
-
-    # create grid to evaluate model
-    xx = np.linspace(xlim[0], xlim[1], 30)
-    yy = np.linspace(ylim[0], ylim[1], 30)
-    YY, XX = np.meshgrid(yy, xx)
-    xy = np.vstack([XX.ravel(), YY.ravel()]).T
-
-    # get the separating hyperplane
-    Z = clf.decision_function(xy).reshape(XX.shape)
-    # plot decision boundary and margins
-    a = ax.contour(XX, YY, Z, colors='k', levels=[0], alpha=0.5, linestyles=['-'])
-    plt.show()
-
 
 def rf_train_experiment_7():
     articles, labels = get_train_articles()
@@ -634,24 +604,26 @@ def experiment_train_data_distribution():
         data = json.load(fin)
         for i, rec in enumerate(data):
             publications.append(rec['publication'])
-    pub_count = Counter(publications)
+    pub_count = sorted(Counter(publications).items(), key=lambda x: x[1], reverse=True)
+
     pub_name, pub_val = [], []
-    for k, v in pub_count.items():
-        pub_name.append(k)
-        pub_val.append(v)
+    for p in pub_count:
+        pub_name.append(p[0])
+        pub_val.append(p[1])
 
     print("Total Test Data Size :", len(train_labels))
     print(label_counts)
     print(pub_count)
 
-    plt.style.use('ggplot')
-
+    # Plot Label Distribution
     plt.bar(["0", "1"], [label_counts[0], label_counts[1]], color=plt.rcParams['axes.prop_cycle'].by_key()['color'])
     plt.xlabel("Labels")
     plt.ylabel("Count")
     plt.tight_layout()
     plt.savefig("plots/train-label-distribution.png")
+    plt.close()
 
+    # Plot Publication Distribution
     pub_x = np.arange(len(pub_name))
     print(pub_x)
     set_facecolor(plt.bar(pub_x, pub_val, color=plt.rcParams['axes.prop_cycle'].by_key()['color']))
@@ -660,16 +632,29 @@ def experiment_train_data_distribution():
     plt.ylabel("Count")
     plt.tight_layout()
     plt.savefig("plots/train-publication-distribution.png")
+    plt.close()
+
+    # Plot Test Data Distribution
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer())
+    ])
+    random_samples = sorted(random.sample(xrange(len(train_data)), 1000))
+    data = pipeline.fit_transform([train_data[i] for i in random_samples]).todense()
+    pca = PCA(n_components=2).fit(data)
+    X = pca.transform(data)
+    plt.scatter(X[:, 0], X[:, 1], c=[train_labels[i] for i in random_samples])
+    plt.savefig("plots/train-data-distribution.png")
+    plt.close()
 
 
 if __name__ == "__main__":
     # experiment_1()
     # generate_articles_test_data()
-    # experiment_train_data_distribution()
+    experiment_train_data_distribution()
     # nb_train_experiment_2()
     # nb_test_experiment_3()
     # experiment_4()
-    svm_train_experiment_5()
+    # svm_train_experiment_5()
     # svm_test_experiment_6()
     # rf_train_experiment_7()
     # get_articles()
