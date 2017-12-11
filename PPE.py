@@ -5,6 +5,8 @@ import string
 import sys
 from collections import defaultdict, Counter
 import itertools
+import pprint
+import matplotlib.pyplot as plt
 
 import nltk
 import numpy as np
@@ -19,6 +21,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from textblob import TextBlob
 from textblob.en.sentiments import NaiveBayesAnalyzer
+from wordcloud import WordCloud
 
 from miners.GoogleMiner import GoogleMiner
 from miners.NewsMiner import NewsMiner
@@ -32,12 +35,17 @@ def get_tweets():
 
 def get_articles():
     nm = NewsMiner()
-    articles = nm.get_articles("Donald Trump", "20170120", "20170830")
-    nm.get_text(articles)
-    with open('out/nyt_articles.json', 'w') as fout:
-        json.dump(articles, fout)
+    articles_dict = {}
+    articles = nm.get_articles("Donald Trump", "20170120", "20171130")
+    articles.extend(nm.get_articles("mexico wall", "20170120", "20171130"))
+    articles.extend(nm.get_articles("obamacare", "20170120", "20171130"))
+    for a in articles:
+        articles_dict[a['_id']] = a
+    nm.get_text(articles_dict)
+    with open('out/nyt_articles_latest.json', 'w') as fout:
+        json.dump(articles_dict, fout)
     print(articles)
-    return articles
+    # return articles
 
     # cnn = NewsMiner().sources['cnn']
     # for i in range(10):
@@ -78,7 +86,7 @@ def stem_tokens(tokens):
 def get_article_token(portion):
     article_token_dict = {}
     toker = nltk.RegexpTokenizer(r'\w+')
-    with open("out/nyt_articles.json") as data_file:
+    with open("out/nyt_articles_latest.json") as data_file:
         data = json.load(data_file)
     for article in data:
         text = article[portion]
@@ -106,9 +114,9 @@ def get_article_token(portion):
 def get_article_token(portion):
     article_token_dict = {}
     toker = nltk.RegexpTokenizer(r'\w+')
-    with open("out/nyt_articles.json") as data_file:
+    with open("out/nyt_articles_latest.json") as data_file:
         data = json.load(data_file)
-    for article in data:
+    for id, article in data.items():
         text = article[portion]
         lowers = text.lower()
         no_punctuation = lowers.translate(str.maketrans("", "", string.punctuation))
@@ -189,6 +197,7 @@ def get_article_promise_progress(articles, promises, tfidf_matrix, nb=False):
             "result": article_sentiment})
     return progress
 
+
 def save_google_results(promises, num=10):
     data = defaultdict(lambda: [])
     gm = GoogleMiner()
@@ -198,8 +207,9 @@ def save_google_results(promises, num=10):
             tokens = tokenize(text)
             data[promise].append(" ".join(remove_stop_words(tokens)))
     with open('out/google_test_data.json', 'w') as fout:
-            json.dump(data, fout)
+        json.dump(data, fout)
     return data
+
 
 def get_google_results(promises, num=10):
     data = defaultdict(lambda: [])
@@ -232,7 +242,7 @@ def experiment_1():
     articles = get_article_token("text")
     articles_sum = get_article_token("summary")
     tfidf_matrix = get_tfidf_matrix(articles, promises)
-    google_sum = get_google_results(promises,10)
+    google_sum = get_google_results(promises, 10)
     results = {'article_text_nb': get_article_promise_progress(articles, promises, tfidf_matrix, nb=True),
                'article_text_pattern': get_article_promise_progress(articles, promises, tfidf_matrix, nb=False),
                'google_nb': get_google_promise_progress(google_sum, nb=True),
@@ -425,8 +435,11 @@ def get_test_articles(promises):
 
 def experiment_3():
     promises = get_promise_token()
+    label_1_keywords = []
+    label_0_keywords = []
     # test_articles = get_test_articles(promises)
-    test_articles = list(get_article_token("text").values())
+    articles = get_article_token("text")
+    test_articles = list(articles.values())
     train_articles, train_labels = get_train_articles()
     pipeline = Pipeline([
         ('vect', TfidfVectorizer(min_df=3, max_df=0.95)),
@@ -434,14 +447,44 @@ def experiment_3():
     ])
     pipeline.fit(train_articles, train_labels)
     y_predicted = pipeline.predict(test_articles)
-    for i,a in enumerate(test_articles):
-        print(a)
-        print(y_predicted[i])
+    with open("out/nyt_articles_latest.json") as data_file:
+        a_data = json.load(data_file)
+        for i, a_id in enumerate(list(articles.keys())):
+            if y_predicted[i] == 0:
+                label_0_keywords.extend(a_data[a_id]['keywords_1'])
+            else:
+                label_1_keywords.extend(a_data[a_id]['keywords_1'])
+            print("Summary: ", a_data[a_id]['summary'])
+            print("Keywords: ", a_data[a_id]['keywords_1'])
+            print("Prediction: ", y_predicted[i])
+            print("\n")
+    plt.figure(figsize=(15, 8))
+    wordcloud_0 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_0_keywords))
+    wordcloud_1 = WordCloud(width=1000, height=500,background_color="white").generate(' '.join(label_1_keywords))
+
+    # plt.subplot(121)
+    plt.imshow(wordcloud_0)
+    plt.axis("off")
+    plt.savefig('plots/experiment-3-label_0.png')
+
+    # plt.subplot(122)
+    plt.imshow(wordcloud_1)
+    plt.axis("off")
+    plt.savefig('plots/experiment-3-label_1.png')
+    # plt.show()
+
+    print("Label 0 Keywords Distribution")
+    pprint.pprint(nltk.FreqDist(label_0_keywords))
+    print(nltk.FreqDist(label_0_keywords).most_common(10))
+    print("Label 1 Keywords Distribution")
+    pprint.pprint(Counter(label_1_keywords))
+    print(nltk.FreqDist(label_1_keywords))
+    print(nltk.FreqDist(label_1_keywords).most_common(10))
 
 
 def experiment_4():
     promises = get_promise_token()
-    test_data = list(itertools.chain.from_iterable(get_google_results(promises,10).values()))
+    test_data = list(itertools.chain.from_iterable(get_google_results(promises, 10).values()))
     train_articles, train_labels = get_train_articles()
     pipeline = Pipeline([
         ('vect', TfidfVectorizer(min_df=3, max_df=0.95)),
@@ -460,3 +503,5 @@ if __name__ == "__main__":
     # experiment_2()
     experiment_3()
     # experiment_4()
+    # get_articles()
+    # print(len(get_article_token('text')))

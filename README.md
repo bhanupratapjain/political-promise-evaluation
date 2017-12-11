@@ -16,12 +16,19 @@ PPE provides a unified view of promises made by Political Candidates while campa
     
     avg / total       0.79      0.82      0.76     35619
     
+    Confusion Matrix
+    
     [[28575   367]
      [ 5994   683]]
 ```
  
 ## Experiment 3
+Total Articles = 
+Predicted Label 1 = 24
+Predicted Label 0 = 600
 
+Top KeyWords in Label 1 Predictions =  
+Top Keywords in Label 0 Predictions = 
 
 
 ## Experiment 4
@@ -69,3 +76,8 @@ Identified all summaries to zero.
     - SVM (TODO)
     
     
+    
+## Getting more articles 
+- search terms 'Donald Trump','mexico wall','obamacare'
+- date between  "20170120", "20171130"
+- Total articles = 624

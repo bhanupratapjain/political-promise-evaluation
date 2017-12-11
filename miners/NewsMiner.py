@@ -38,7 +38,7 @@ class NewsMiner:
         return articles
 
     def get_text(self, articles):
-        for a in articles:
+        for id,a in articles.items():
             try:
                 article = Article(a['web_url'])
                 article.download()
