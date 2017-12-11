@@ -1,2 +1,25 @@
-[{"promise_title": "Repeal and Replace Obamacare Act", "promise_tag": ["Next, I will work with Congress to introduce the following broader legislative measures and fight for their passage within the first 100 days of my Administration:"], "promise_description": "Fully repeals Obamacare and replaces it with Health Savings Accounts, the ability to purchase health insurance across state lines, and lets states manage Medicaid funds. Reforms will also include cutting the red tape at the FDA: there are over 4,000 drugs awaiting approval, and we especially want to speed the approval of life-saving medications.", "promise_status": "Broken"},
-  {"promise_title": "Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.", "promise_tag": ["Young Undocumented Immigrants and Children of Illegal Immigrants"], "promise_description": "", "promise_status": "In progress"}]
+[
+  {
+    "promise_title": "Repeal and Replace Obamacare Act",
+    "promise_tag": [
+      "Next, I will work with Congress to introduce the following broader legislative measures and fight for their passage within the first 100 days of my Administration:"
+    ],
+    "promise_description": "Fully repeals Obamacare and replaces it with Health Savings Accounts, the ability to purchase health insurance across state lines, and lets states manage Medicaid funds. Reforms will also include cutting the red tape at the FDA: there are over 4,000 drugs awaiting approval, and we especially want to speed the approval of life-saving medications.",
+    "promise_status": "Broken"
+  },
+  {
+    "promise_title": "Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.",
+    "promise_tag": [
+      "Young Undocumented Immigrants and Children of Illegal Immigrants"
+    ],
+    "promise_description": "",
+    "promise_status": "In progress"
+  },
+  {
+    "promise_title": "Middle Class Tax Relief And Simplification Act",
+    "promise_tag": [
+      "Next, I will work with Congress to introduce the following broader legislative measures and fight for their passage within the first 100 days of my Administration:"
+    ],
+    "promise_description": "Middle Class Tax Relief And Simplification Act. An economic plan designed to grow the economy 4% per year and create at least 25 million new jobs through massive tax reduction and simplification, in combination with trade reform, regulatory relief, and lifting the restrictions on American energy. The largest tax reductions are for the middle class. A middle-class family with 2 children will get a 35% tax cut. The current number of brackets will be reduced from 7 to 3, and tax forms will likewise be greatly simplified. The business rate will be lowered from 35 to 15 percent, and the trillions of dollars of American corporate money overseas can now be brought back at a 10 percent rate."
+  }
+]

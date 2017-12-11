@@ -461,16 +461,16 @@ def rf_train_experiment_7():
 
 
 def get_test_articles(promises):
-    articles = []
+    articles =defaultdict(lambda :[])
     test_articles = get_article_token("text")
     tfidf_matrix = get_tfidf_matrix(test_articles, promises)
     for i, promise in enumerate(promises):
         cosine_sim = cosine_similarity(tfidf_matrix[i: i + 1], tfidf_matrix)
         single_array = np.array(cosine_sim[0])
-        article_array = single_array.argsort()[-6:][::-1]
-        matched_articles = [s for s in article_array if s > 1]
+        article_array = single_array.argsort()[-11:][::-1]
+        matched_articles = [s for s in article_array if s > 2]
         for x in matched_articles:
-            articles.append(test_articles[list(test_articles.keys())[x - 2]])
+            articles[promise].append(test_articles[list(test_articles.keys())[x - 3]])
     return articles
 
 
@@ -522,6 +522,19 @@ def nb_test_experiment_3():
     print(nltk.FreqDist(label_1_keywords))
     print(nltk.FreqDist(label_1_keywords).most_common(10))
 
+
+def nb_matched_test_experiment_8():
+    promises = get_promise_token()
+    test_articles = get_test_articles(promises)
+    train_articles, train_labels = get_train_articles()
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer(min_df=3, max_df=0.95)),
+        ('clf', MultinomialNB()),
+    ])
+    pipeline.fit(train_articles, train_labels)
+    for promise,articles in test_articles.items():
+        print(promise)
+        print(pipeline.predict(articles))
 
 def svm_test_experiment_6():
     promises = get_promise_token()
@@ -661,14 +674,13 @@ def experiment_train_data_distribution():
 
 
 if __name__ == "__main__":
-    # experiment_1()
+    experiment_1()
     # generate_articles_test_data()
-    experiment_train_data_distribution()
+    # experiment_train_data_distribution()
     # nb_train_experiment_2()
     # nb_test_experiment_3()
     # experiment_4()
     # svm_train_experiment_5()
     # svm_test_experiment_6()
     # rf_train_experiment_7()
-    # get_articles()
-    # print(len(get_article_token('text')))
+    # nb_matched_test_experiment_8()

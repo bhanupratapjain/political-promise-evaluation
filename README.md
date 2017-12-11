@@ -71,9 +71,19 @@ Confusion Matrix
 [[28627   320]
  [ 6111   561]]
  
+ # Experiment 8: Classifying matched articles to promises using Naive Bayes
+     Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [0 0 0 0 0 0 0 0 0 0]
+    Repeal and Replace Obamacare Act
+    [0 0 0 0 0 0 0 0 1 0]
+    Middle Class Tax Relief And Simplification Act
+    [1 1 1 0 1 1 0 0 0 1]
 
 # Report
 
+## Introduction
+## Problem Description
+## Background and Related Work
 ## Data
 
 ### Promises
@@ -93,17 +103,24 @@ Confusion Matrix
         Counter({0: 115576, 1: 26897})
         Counter({'Breitbart': 23781, 'New York Post': 17493, 'NPR': 11992, 'CNN': 11488, 'Washington Post': 11114, 'Reuters': 10710, 'Guardian': 8681, 'New York Times': 7803, 'Atlantic': 7179, 'Business Insider': 6757, 'National Review': 6203, 'Talking Points Memo': 5214, 'Vox': 4947, 'Buzzfeed News': 4854, 'Fox News': 4354})
         ```     
-  
+
+## Data 
+### Data Extraction
+
+## Data Prepossessing
+### Data Labelling
+### Data Sanity
 
 ## Methodology
-
 ### Document Matching 
 - Bag of Words
 - Tf-Idf
 
 ### Progress Tracking
+#### Lexicon Based
 - Naive Bayes (NTLK - Pre trained) (Pure Sentiment)
 - Pattern (Lexical) (Pure Sentiment)
+#### Custom Classifier
 - Custom Trained Classifier (Vader Sentiment + Bag of words for Progressive Words )
     - Train Data Labelling
         - Label = 0 (Broken or in Progress)
@@ -119,4 +136,6 @@ Confusion Matrix
     - Naive Bayes -> Experiment 2
     - Random Forest (TODO)
     - SVM (TODO)
-    
+
+### Results
+    No need to make individual headings for experiments. Write what we tried. Give numbners and tables. What failed. And what ultimately worked.
