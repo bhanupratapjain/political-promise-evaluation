@@ -23,7 +23,7 @@ PPE provides a unified view of promises made by Political Candidates while campa
 ```
  
 ## Experiment 3
-Total Articles = 
+Total Articles = 624
 Predicted Label 1 = 24
 Predicted Label 0 = 600
 
