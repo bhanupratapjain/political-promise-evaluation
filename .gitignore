@@ -109,7 +109,6 @@ ENV/
 .DS_Store
 
 data/
-out/
 
 # Setup files
 miners/setup.py
