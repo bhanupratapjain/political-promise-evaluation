@@ -5,6 +5,7 @@ PPE provides a unified view of promises made by Political Candidates while campa
 ```
 - Setup Python Version >= 3
 - pip install -r requirements.txt
+- Get data from https://www.kaggle.com/snapcrack/all-the-news. Extract under directory "data"
 - python PPE.py
 - Check the output on console and under dir "out" and "plots" (Exsiting data will be overwriten)
 ``` 
