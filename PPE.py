@@ -194,13 +194,13 @@ def get_article_promise_progress(articles, promises, tfidf_matrix, nb=False):
     for i, promise in enumerate(promises):
         cosine_sim = cosine_similarity(tfidf_matrix[i: i + 1], tfidf_matrix)
         single_array = np.array(cosine_sim[0])
-        article_array = single_array.argsort()[-6:][::-1]
-        matched_articles = [s for s in article_array if s > 1]
+        article_array = single_array.argsort()[-11:][::-1]
+        matched_articles = [s for s in article_array if s > 2]
         article_sentiment = []
         for x in matched_articles:
             article_sentiment.append({
-                "text": articles[list(articles.keys())[x - 2]],
-                "sentiment": sentiment_analysis(articles[list(articles.keys())[x - 2]], nb)
+                "text": articles[list(articles.keys())[x - 3]],
+                "sentiment": sentiment_analysis(articles[list(articles.keys())[x - 3]], nb)
             })
         progress.append({
             "promise": promise,
@@ -673,8 +673,23 @@ def experiment_train_data_distribution():
     plt.close()
 
 
+def experiment_1_results_analysis():
+    with open('out/results.json', 'r') as fin:
+        data = json.load(fin)
+
+    for mth,values in data.items():
+        print("\n"+mth)
+        for r in values:
+            print(r['promise'])
+            label = []
+            for sent in r['result']:
+                label.append(0 if sent['sentiment']['class']=='neg' else 1)
+            print(label)
+
+
 if __name__ == "__main__":
-    experiment_1()
+    # experiment_1()
+    experiment_1_results_analysis()
     # generate_articles_test_data()
     # experiment_train_data_distribution()
     # nb_train_experiment_2()

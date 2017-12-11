@@ -2,7 +2,55 @@
 PPE provides a unified view of promises made by Political Candidates while campaign- ing and the promises fulfilled during their tenure. PPE aims to scour Political Manifesto’s and summarize political promises. We will extract relevant Tweets on Twitter and then evaluate the the fulfillment status of the promises
 
 
-# Experiments
+# Experiments 1 Lexicon Based
+    article_text_pattern
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Repeal and Replace Obamacare Act
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    
+    google_nb
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 1, 1, 0, 1, 1, 0, 0, 1]
+    Repeal and Replace Obamacare Act
+    [1, 0, 0, 0, 1, 0, 1, 1, 0, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 1, 1, 0, 0, 1, 1, 0, 1, 1]
+    
+    google_pattern
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 0, 0, 1, 0, 1, 1, 0, 0]
+    Repeal and Replace Obamacare Act
+    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 1]
+    
+    article_summary_nb
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Repeal and Replace Obamacare Act
+    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1]
+    
+    article_text_nb
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Repeal and Replace Obamacare Act
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    
+    article_summary_pattern
+    Build a wall. Trump's campaign began with a promise to build a wall across the United States' southern border and deport the country's 11 million undocumented immigrants.
+    [1, 1, 1, 1, 0, 0, 0, 1, 1, 0]
+    Repeal and Replace Obamacare Act
+    [1, 1, 0, 1, 0, 0, 1, 1, 1, 1]
+    Middle Class Tax Relief And Simplification Act
+    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1]
+
 
 ## Experiment 2
 Naive Bayes with Train  (unbalanced)
