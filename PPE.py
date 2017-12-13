@@ -688,6 +688,10 @@ def experiment_1_results_analysis():
 
 
 if __name__ == "__main__":
+    # Train Data Generation
+    save_articles_with_sentiment()
+    generate_articles_train_data()
+
     lexicon_experiment_1()
     experiment_1_results_analysis()
     nb_train_experiment_2()
