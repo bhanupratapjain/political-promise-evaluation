@@ -21,7 +21,7 @@ lxml==4.1.0
 Markdown==2.6.10
 matplotlib==2.1.0
 newspaper3k==0.2.5
-nltk==3.2.5
+nltk==3.4.5
 numpy==1.13.3
 nytimesarticle==0.1.0
 olefile==0.44
